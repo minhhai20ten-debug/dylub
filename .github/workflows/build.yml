@@ -14,16 +14,15 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Setup Theos
-      uses: Randomblock1/theos-action@v1
-      with:
-        theos-dir: 'theos'
-        theos-sdks: 'https://github.com/theos/sdks'
+      run: |
+        git clone --recursive https://github.com/theos/theos.git ${{ github.workspace }}/theos
 
     - name: Build Dylib
       run: |
         export THEOS=${{ github.workspace }}/theos
+        export SDKPATH=$(xcrun --sdk iphoneos --show-sdk-path)
         make clean
-        make
+        make FINALPACKAGE=1
       env:
         ARCHS: "arm64 arm64e"
 
@@ -32,5 +31,6 @@ jobs:
       with:
         name: WitchAccounts-Dylib
         path: |
-          .theos/obj/debug/WitchAccounts.dylib
-          .theos/obj/WitchAccounts.dylib
+          .theos/obj/debug/*.dylib
+          .theos/obj/*.dylib
+          packages/*.deb
