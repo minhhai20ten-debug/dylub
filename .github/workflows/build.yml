@@ -13,24 +13,21 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Setup Theos
-      run: |
-        git clone --recursive https://github.com/theos/theos.git ${{ github.workspace }}/theos
-
     - name: Build Dylib
       run: |
-        export THEOS=${{ github.workspace }}/theos
-        export SDKPATH=$(xcrun --sdk iphoneos --show-sdk-path)
-        make clean
-        make FINALPACKAGE=1
-      env:
-        ARCHS: "arm64 arm64e"
+        xcrun -sdk iphoneos clang \
+          -arch arm64 \
+          -arch arm64e \
+          -miphoneos-version-min=14.0 \
+          -shared \
+          -x objective-c \
+          -framework Foundation \
+          -framework UIKit \
+          Tweak.xm \
+          -o WitchAccounts.dylib
 
     - name: Upload Dylib
       uses: actions/upload-artifact@v4
       with:
         name: WitchAccounts-Dylib
-        path: |
-          .theos/obj/debug/*.dylib
-          .theos/obj/*.dylib
-          packages/*.deb
+        path: WitchAccounts.dylib
