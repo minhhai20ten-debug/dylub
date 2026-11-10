@@ -17,7 +17,7 @@ jobs:
       uses: Randomblock1/theos-action@v1
       with:
         theos-dir: 'theos'
-        theos-sdks: ''   # Bỏ qua tải SDK, tránh lỗi symlink
+        theos-sdks: 'https://github.com/theos/sdks'
 
     - name: Build Dylib
       run: |
