@@ -1,0 +1,35 @@
+name: Build WitchAccounts
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Theos
+      uses: Randomblock1/theos-action@v1
+      with:
+        theos-dir: 'theos'
+
+    - name: Build Dylib
+      run: |
+        export THEOS=${{ github.workspace }}/theos
+        make clean
+        make
+      env:
+        ARCHS: "arm64 arm64e"
+
+    - name: Upload Dylib
+      uses: actions/upload-artifact@v4
+      with:
+        name: WitchAccounts-Dylib
+        path: |
+          .theos/obj/debug/WitchAccounts.dylib
+          .theos/obj/WitchAccounts.dylib
